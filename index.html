@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Dominos</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+
+    </style>
+  </head>
+  <body>
+  	<div class='content'>
+  		<h1>
+  			Dominos
+		</h1>
+  		<h3>
+  			Just a game of bones!
+		</h3>
+  	</div>
+  	<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/classes.js"></script>
+	<script>
+		var socket = io();
+
+		var dominos_client = {};
+
+		dominos_client.debug = true;
+
+		dominos_client.updateUI = function(){
+
+		};
+
+		dominos_client.handleSocketResponse = function(data){
+			console.log(data);
+		};
+
+		dominos_client.handleDominoClick = function(){
+			console.log('mesage', dominos_client);
+			dominos_client.updateUI();
+			socket.emit('cloud audiology event', dominos_client);
+		};
+
+		socket.on('player', dominos_client.handleSocketResponse);
+
+		$(document).on('click', '.play-button', dominos_client.handleDominoClick);
+
+
+		$(document).ready(function(){
+			dominos_client.updateUI();
+		});
+
+  </script>
+  </body>
+</html>
