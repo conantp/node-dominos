@@ -21,6 +21,8 @@ app.get('/classes.js', function(req, res){
 // TESTING STUFF
 var game = new DominosGame();
 
+game.socket = io;
+
 var p = new Player("Patrick");
 
 game.addPlayer(p);
@@ -35,6 +37,7 @@ game.makePlay(p, p.hand.pop() );
 console.log(game.boneyard.boneyard);
 console.log(game.board);
 console.log(p);
+console.log(game);
 // END TESTING
 
 // console.log(game.getCurrentScore() );

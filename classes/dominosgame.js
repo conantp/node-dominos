@@ -10,6 +10,8 @@ class DominosGame{
 		this.boneyard.fillBoneYard();
 
 		this.players = [];
+
+		this.socket = false;
 	}
 
 	addPlayer(player){
