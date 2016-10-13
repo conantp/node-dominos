@@ -12,16 +12,27 @@ app.get('/', function(req, res){
   res.sendfile('index.html');
 });
 
+app.get('/player', function(req, res){
+  res.sendfile('html/player.html');
+});
+
 app.get('/classes.js', function(req, res){
   res.sendfile('classes.js');
 });
 
+app.get('/classes/player.js', function(req, res){
+  res.sendfile('classes/player.js');
+});
+
+app.get('/classes/domino.js', function(req, res){
+  res.sendfile('classes/domino.js');
+});
 
 
 // TESTING STUFF
 var game = new DominosGame();
 
-game.socket = io;
+// game.socket = io;
 
 var p = new Player("Patrick");
 
@@ -50,6 +61,32 @@ io.on('connection', function(socket){
 
 	socket.on('disconnect', function(){
 		console.log('user disconnected');
+	});
+
+	socket.on('domino-play', function(player, domino){
+		console.log('got domino play', player, domino);
+
+		player = game.players[0];
+		domino = player.hand[0];
+		
+		game.makePlay(player, domino);
+		console.log(player);
+		console.log(game.board);
+
+	});
+
+	socket.on('player-add', function(player){
+		console.log('got event', player);
+
+		var my_player = new Player(player.player_name);
+		game.addPlayer(my_player);
+		console.log(game);
+
+		game.fillPlayerHand(my_player);
+
+		io.emit('player-refresh', my_player);
+
+		io.emit('received', player);
 	});
 
 	socket.on('event', function(data){

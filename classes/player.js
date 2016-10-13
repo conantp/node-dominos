@@ -37,4 +37,6 @@ class Player {
   // }
 }
 
-module.exports = Player;
+if(typeof module != typeof undefined){
+	module.exports = Player;	
+}

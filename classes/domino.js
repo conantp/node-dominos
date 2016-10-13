@@ -6,4 +6,6 @@ class Domino {
 	}
 }
 
-module.exports = Domino;
+if(typeof module != typeof undefined){
+	module.exports = Domino;
+}
