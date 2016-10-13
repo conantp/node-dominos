@@ -18,7 +18,7 @@ app.get('/classes.js', function(req, res){
 
 
 
-
+// TESTING STUFF
 var game = new DominosGame();
 
 var p = new Player("Patrick");
@@ -35,6 +35,7 @@ game.makePlay(p, p.hand.pop() );
 console.log(game.boneyard.boneyard);
 console.log(game.board);
 console.log(p);
+// END TESTING
 
 // console.log(game.getCurrentScore() );
 
@@ -42,18 +43,15 @@ io.on('connection', function(socket){
   console.log('a user connected');
   	socket.emit('player', p);
 
-
-	socket.emit('cloud audiology receive', 'connect');
-	// socket.broadcast('cloud audiology receive', 'connect2');
-	// socket.send('cloud audiology receive', 'connect123');
+	socket.emit('connect123', 'connect');
 
 	socket.on('disconnect', function(){
 		console.log('user disconnected');
 	});
 
-	socket.on('cloud audiology event', function(data){
+	socket.on('event', function(data){
 		console.log('got event', data);
-		io.emit('cloud audiology receive', data);
+		io.emit('received', data);
 	});
 });
 
