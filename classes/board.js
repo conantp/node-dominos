@@ -1,3 +1,7 @@
+if(typeof module != typeof undefined && typeof Domino != undefined){
+	// var Domino = require('./domino.js');
+}
+
 class Board {
 	constructor() {
 		this.id = 1;
@@ -11,7 +15,11 @@ class Board {
 
 	playPiece(domino){
 		console.log('playpiece');
-		this.pieces_up.push(domino);
+		this.pieces_right.push(domino);
+	}
+	playPieceLeft(domino){
+		console.log('playpiece');
+		this.pieces_left.push(domino);
 	}
 
 	getCurrentScore() {
@@ -19,12 +27,24 @@ class Board {
 	  return 'dsaf';
 	}
 
+	fromJSON(obj){
+	    for (var prop in obj){
+	    	this[prop] = obj[prop];
+	    }
+	    for(var index in this.pieces_up){
+	    	var dominoJSON = this.pieces_up[index];
+	    	var newDomino = new Domino();
+	    	newDomino.fromJSON(dominoJSON);
+	    	this.pieces_up[index] = newDomino;
+	    }
+	}
+
 	// get currentScore() {
 	// 	console.log('hello');
 	// 	return this.getCurrentScore();
 	// }
-
-	
 }
 
-module.exports = Board;
+if(typeof module != typeof undefined){
+	module.exports = Board;
+}

@@ -2,7 +2,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-// var Domino = require('./classes/domino.js');
+var Domino = require('./classes/domino.js');
 // var Board = require('./classes/board.js');
 // var Boneyard = require('./classes/boneyard.js');
 var DominosGame = require('./classes/dominosgame.js');
@@ -28,26 +28,30 @@ app.get('/classes/domino.js', function(req, res){
   res.sendfile('classes/domino.js');
 });
 
+app.get('/classes/board.js', function(req, res){
+  res.sendfile('classes/board.js');
+});
+
 
 // TESTING STUFF
 var game = new DominosGame();
 
 // game.socket = io;
 
-var p = new Player("Patrick");
+// var p = new Player("Patrick");
 
-game.addPlayer(p);
+// game.addPlayer(p);
 
-console.log(game);
+// console.log(game);
 
-game.fillPlayerHand(p);
+// game.fillPlayerHand(p);
 
-game.makePlay(p, p.hand.pop() );
-game.makePlay(p, p.hand.pop() );
-game.makePlay(p, p.hand.pop() );
-console.log(game.boneyard.boneyard);
-console.log(game.board);
-console.log(p);
+// game.makePlay(p, p.hand.pop() );
+// game.makePlay(p, p.hand.pop() );
+// game.makePlay(p, p.hand.pop() );
+// console.log(game.boneyard.boneyard);
+// console.log(game.board);
+// console.log(p);
 console.log(game);
 // END TESTING
 
@@ -55,7 +59,8 @@ console.log(game);
 
 io.on('connection', function(socket){
   console.log('a user connected');
-  	socket.emit('player', p);
+  	// socket.emit('player', p);
+		io.emit('board-refresh', game.board);
 
 	socket.emit('connect123', 'connect');
 
@@ -63,15 +68,28 @@ io.on('connection', function(socket){
 		console.log('user disconnected');
 	});
 
-	socket.on('domino-play', function(player, domino){
-		console.log('got domino play', player, domino);
+	socket.on('domino-play', function(playerJSON, dominoJSON){
+		// console.log('got domino play', player, domino);
 
-		player = game.players[0];
-		domino = player.hand[0];
+		var player = new Player();
+		player.fromJSON(playerJSON);
+
+		var domino = new Domino();
+		domino.fromJSON(dominoJSON);
 		
-		game.makePlay(player, domino);
+		if(! game.makePlay(player, domino) ){
+			io.emit('domino-play-error', "Invalid Play");
+
+		}
+
 		console.log(player);
 		console.log(game.board);
+
+		io.emit('player-refresh', player);
+
+		io.emit('board-refresh', game.board);
+
+		// io.emit('domino-play-error', "Invalid Play");
 
 	});
 
@@ -80,9 +98,10 @@ io.on('connection', function(socket){
 
 		var my_player = new Player(player.player_name);
 		game.addPlayer(my_player);
-		console.log(game);
 
 		game.fillPlayerHand(my_player);
+
+		console.log(game);
 
 		io.emit('player-refresh', my_player);
 

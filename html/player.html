@@ -1,0 +1,258 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Dominos Player</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+
+      .player-hand{
+      	overflow: hidden;
+      }
+
+      .board .domino{
+		/*width: 200px;*/
+
+      }
+
+      .board .domino div{
+      	display: inline-block;
+      	padding-top: 0;
+      	padding-bottom: 0;
+
+		}
+      .board .domino .top{
+      	border-bottom: none;
+      	border-right: 3px solid black;
+      	padding-right: 15px;
+      }
+
+    .board .domino .bottom{
+    	padding-left: 15px;
+    }
+
+      .domino{
+      	padding: 20px;
+      	margin: 10px;
+      	border: 1px solid black;
+      	text-align: center;
+      	/*width: 100px;*/
+      	float: left;
+      	font-size: 36px;
+      	cursor: pointer;
+      	transition: 0.5s;
+      }
+
+      .domino:hover{
+      	background: red;
+      }
+
+      .domino .top, .domino .bottom{
+      	/*padding: 20px 0;*/
+      }
+
+      .domino .bottom{
+      	padding-top: 15px;
+      }
+      .domino .top{
+      	padding-bottom: 15px;
+      	border-bottom: 3px solid black;
+      }
+    </style>
+  </head>
+  <body>
+  	<div class='content'>
+  		<h1>
+  			Dominos Player
+		</h1>
+  		<h3>
+  			Player Name 
+  			<span class='active-player-name'>
+
+  			</span>
+		</h3>
+		<div class='step1'>
+			<h1>Name</h1>
+			<form class='player-name-form' action=''>
+				<input class='player-name' type='text' value='' name='player_name' />
+				<input class='enter-name' type='submit' value='Start' />
+			</form>
+		</div>
+		<div class='player-hand'>
+			<div class='domino domino-template' data-domino-index='-1'>
+				<div class='top'>
+
+				</div>
+				<div class='bottom'>
+
+				</div>
+			</div>
+		</div>
+  	</div>
+  	<div class='board-container'>
+	  	<div class='board'>
+
+	  	</div>
+  	</div>
+  	<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/classes/player.js"></script>
+    <script src="/classes/domino.js"></script>
+    <script src="/classes/board.js"></script>
+	<script>
+		var socket = io();
+
+		var dominos_client = {};
+
+		dominos_client.active_player = false;
+		dominos_client.error_message = false;
+
+		dominos_client.debug = true;
+
+		dominos_client.domino_template = $(".domino-template").remove();
+
+		dominos_client.updateUI = function(){
+			if(dominos_client.error_message){
+				$(".player-hand").after("<div class='error'><h2>Error</h2>" + dominos_client.error_message + "</div>");
+			}
+			else{
+				$(".error").fadeOut();
+			}
+			if(dominos_client.active_player){
+				$(".active-player-name").html(dominos_client.active_player.player_name);
+
+				$(".step1").fadeOut();
+
+				$('.player-hand').html("");
+				if(dominos_client.active_player.hand.length){
+					for(index in dominos_client.active_player.hand){
+						bone = dominos_client.active_player.hand[index];
+						console.log(bone);
+
+						var template = dominos_client.domino_template.clone();
+
+						template.find('.top').html(bone.top_number);
+						template.find('.bottom').html(bone.bottom_number);
+						template.attr('data-domino-index', index);
+
+						$('.player-hand').append(template);
+					}
+				}
+			}
+		};
+
+		dominos_client.handlePlayError = function(error){
+			console.log('play error', error);
+
+			dominos_client.error_message = error;
+			dominos_client.updateUI();
+		};
+
+		dominos_client.handlePlayerRefresh = function(player){
+			console.log('refresh player', player);
+			dominos_client.error_message = false;
+
+			if(! dominos_client.active_player){
+				dominos_client.active_player = new Player();
+			}
+			dominos_client.active_player.fromJSON(player);
+			console.log('active player', dominos_client.active_player);
+
+			dominos_client.updateUI();
+		};
+
+		dominos_client.handleDominoClick = function(event){
+			var domino_index = $(this).attr('data-domino-index');
+
+			socket.emit('domino-play', dominos_client.active_player, dominos_client.active_player.hand[domino_index]);
+
+			// delete dominos_client.active_player.hand[domino_index];
+
+			// dominos_client.updateUI();
+		};
+
+		dominos_client.handlePlayerName = function(){
+			var player_name = $('.player-name').val();
+			console.log('player_name', player_name);
+
+			var player = new Player(player_name);
+
+			socket.emit('player-add', player);
+			return false;
+		};
+
+		socket.on('player-refresh', dominos_client.handlePlayerRefresh);
+		socket.on('domino-play-error', dominos_client.handlePlayError);
+
+		$(document).on('submit', '.player-name-form', dominos_client.handlePlayerName);
+
+		$(document).on('click', '.domino', dominos_client.handleDominoClick);
+
+		$(document).ready(function(){
+			dominos_client.updateUI();
+		});
+
+		// Board Stuff
+		dominos_board_client = {};
+		dominos_board_client.active_board = false;
+		dominos_board_client.error_message = false;
+
+		dominos_board_client.updateUI = function(){
+			if(dominos_board_client.error_message){
+				$(".board").after("<div class='error'><h2>Error</h2>" + dominos_client.error_message + "</div>");
+			}
+			else{
+				$(".board .error").fadeOut();
+			}
+			if(dominos_board_client.active_board){
+				$('.board').html("");
+				if(dominos_board_client.active_board.pieces_right.length){
+					for(index in dominos_board_client.active_board.pieces_right){
+						bone = dominos_board_client.active_board.pieces_right[index];
+						console.log(bone);
+
+						var template = dominos_client.domino_template.clone();
+
+						template.find('.top').html(bone.top_number);
+						template.find('.bottom').html(bone.bottom_number);
+						template.attr('data-domino-index', index);
+
+						$('.board').append(template);
+					}
+				}
+
+				if(dominos_board_client.active_board.pieces_left.length){
+					for(index in dominos_board_client.active_board.pieces_left){
+						bone = dominos_board_client.active_board.pieces_left[index];
+						console.log(bone);
+
+						var template = dominos_client.domino_template.clone();
+
+						template.find('.top').html(bone.top_number);
+						template.find('.bottom').html(bone.bottom_number);
+						template.attr('data-domino-index', index);
+
+						$('.board').prepend(template);
+					}
+				}
+			}
+		};
+
+		dominos_board_client.handleBoardRefresh = function(boardJSON){
+			console.log('refresh board', boardJSON);
+			dominos_board_client.error_message = false;
+
+			if(! dominos_board_client.active_board){
+				dominos_board_client.active_board = new Board();
+			}
+			dominos_board_client.active_board.fromJSON(boardJSON);
+			console.log('active board', dominos_board_client.active_board);
+
+			dominos_board_client.updateUI();
+		};
+		socket.on('board-refresh', dominos_board_client.handleBoardRefresh);
+
+
+  </script>
+  </body>
+</html>
