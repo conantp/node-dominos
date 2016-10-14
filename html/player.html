@@ -78,18 +78,21 @@
 				<input class='enter-name' type='submit' value='Start' />
 			</form>
 		</div>
-		<div class='player-hand'>
-			<div class='domino domino-template' data-domino-index='-1'>
-				<div class='top'>
+		<div class='player-hand-container'>
+			<div class='player-hand'>
+				<div class='domino domino-template' data-domino-index='-1'>
+					<div class='top'>
 
-				</div>
-				<div class='bottom'>
+					</div>
+					<div class='bottom'>
 
+					</div>
 				</div>
 			</div>
 		</div>
   	</div>
   	<div class='board-container'>
+  		<h1>Board</h1>
 	  	<div class='board'>
 
 	  	</div>
@@ -113,11 +116,18 @@
 
 		dominos_client.updateUI = function(){
 			if(dominos_client.error_message){
-				$(".player-hand").after("<div class='error'><h2>Error</h2>" + dominos_client.error_message + "</div>");
+				if($(".player-hand-container .error").length){
+					$(".player-hand-container .error").remove();
+					$(".player-hand-container").append("<div class='error'><h2>Error</h2>" + dominos_client.error_message + "</div>");
+				}
+				else{
+					$(".player-hand-container").append("<div class='error'><h2>Error</h2>" + dominos_client.error_message + "</div>");
+				}
 			}
 			else{
-				$(".error").fadeOut();
+				$(".player-hand-container .error").fadeOut();
 			}
+
 			if(dominos_client.active_player){
 				$(".active-player-name").html(dominos_client.active_player.player_name);
 
@@ -163,8 +173,9 @@
 
 		dominos_client.handleDominoClick = function(event){
 			var domino_index = $(this).attr('data-domino-index');
-
+			
 			socket.emit('domino-play', dominos_client.active_player, dominos_client.active_player.hand[domino_index]);
+
 
 			// delete dominos_client.active_player.hand[domino_index];
 

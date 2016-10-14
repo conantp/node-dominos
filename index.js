@@ -79,15 +79,16 @@ io.on('connection', function(socket){
 		
 		if(! game.makePlay(player, domino) ){
 			io.emit('domino-play-error', "Invalid Play");
+		}
+		else{
+			io.emit('player-refresh', player);
+			io.emit('board-refresh', game.board);
 
 		}
 
 		console.log(player);
 		console.log(game.board);
 
-		io.emit('player-refresh', player);
-
-		io.emit('board-refresh', game.board);
 
 		// io.emit('domino-play-error', "Invalid Play");
 
