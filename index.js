@@ -1,4 +1,6 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
+
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
@@ -8,8 +10,14 @@ var Domino = require('./classes/domino.js');
 var DominosGame = require('./classes/dominosgame.js');
 var Player = require('./classes/player.js');
 
+app.use('/dist', express.static(__dirname + '/dist'));
+
+// app.get('/dist/styles/main.css', function(req, res){
+//   res.sendfile('dist/styles/main.css');
+// });
+
 app.get('/', function(req, res){
-  res.sendfile('index.html');
+  res.sendfile('html/player.html');
 });
 
 app.get('/player', function(req, res){
@@ -116,6 +124,6 @@ io.on('connection', function(socket){
 });
 
 
-http.listen((process.env.PORT || 3000), function(){
-  console.log('listening on *:3000');
+http.listen((process.env.PORT || 3002), function(){
+  console.log('listening on *:3002');
 });

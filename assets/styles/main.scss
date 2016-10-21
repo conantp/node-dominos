@@ -1,0 +1,64 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+	font: 13px Helvetica, Arial;
+	// background: green;
+
+} 
+
+.player-hand{
+	overflow: hidden;
+}
+
+.board{
+	margin: 10px;
+  	border: 5px solid black;
+  	overflow: hidden;
+
+  	.domino{
+  		div{
+	      	display: inline-block;
+	      	padding-top: 0;
+	      	padding-bottom: 0;
+		}
+
+		.top{
+	      	border-bottom: none;
+	      	border-right: 3px solid black;
+	      	padding-right: 15px;
+	    }
+
+	    .bottom{
+	    	padding-left: 15px;
+	    }
+	}
+}
+
+
+.domino{
+	box-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+
+	padding: 20px;
+	margin: 10px;
+	border: 1px solid black;
+	text-align: center;
+	/*width: 100px;*/
+	float: left;
+	font-size: 36px;
+	cursor: pointer;
+	transition: 0.5s;
+	z-index: 10000;
+
+	&:hover{
+		background: rgba(0,0,0,0.2);
+	    transform: rotate(7deg) ;
+	}
+
+	.bottom{
+	padding-top: 15px;
+}
+
+.top{
+  	padding-bottom: 15px;
+  	border-bottom: 3px solid black;
+  }
+}
