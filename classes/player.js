@@ -7,6 +7,7 @@ class Player {
 		this.player_name = player_name;
 		this.score = 0;
 		this.id = false;
+		this.turn = false;
 		this.hand = [];
 	}
 

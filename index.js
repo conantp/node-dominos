@@ -57,6 +57,7 @@ var game = new DominosGame();
 // console.log(game.board);
 // console.log(p);
 console.log(game);
+
 // END TESTING
 
 // console.log(game.getCurrentScore() );
@@ -88,6 +89,7 @@ gameServer.dominoPlay = function(playerJSON, dominoJSON){
 	else{
 		var score = game.checkForScore();
 		player.score += score;
+		game.advancePlayer();
 		if(score){
 			io.emit('player-score', player, score);
 			io.emit('player-list', game.players);
@@ -113,6 +115,10 @@ gameServer.playerAdd = function(player){
 	game.addPlayer(my_player);
 
 	game.fillPlayerHand(my_player);
+
+	if(game.active_player == false){
+		game.active_player = my_player;
+	}
 
 	console.log(game);
 

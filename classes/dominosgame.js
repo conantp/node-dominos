@@ -11,6 +11,8 @@ class DominosGame{
 
 		this.players = [];
 
+		this.active_player = false;
+
 		this.socket = false;
 	}
 
@@ -29,7 +31,18 @@ class DominosGame{
 		this.players.push(player);
 	}
 
+	advancePlayer(){
+		for(var player in this.players){
+			var active_player = this.active_player;
+			console.log('testing Jesse Advance Player' + this.players[player]);
+		}
+	}
+
 	makePlay(player, domino){
+		if(this.active_player.id !== player.id){
+			return false;
+		}
+
 		var last_right = this.board.pieces_right[this.board.pieces_right.length - 1];
 		var first_right = this.board.pieces_right[0];
 		var last_left = this.board.pieces_left[this.board.pieces_left.length - 1];
