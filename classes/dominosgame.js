@@ -14,6 +14,16 @@ class DominosGame{
 		this.socket = false;
 	}
 
+	getPlayer(id){
+		for(var index in this.players){
+			var a_player = this.players[index];
+			if(a_player.id == id){
+				return a_player;
+			}
+		}
+		return false;
+	}
+
 	addPlayer(player){
 		player.id = this.players.length + 1;
 		this.players.push(player);
@@ -102,6 +112,77 @@ class DominosGame{
 	fillPlayerHand(player){
 		for(var i = 0; i < 7; i++){
 			player.addToHand(this.boneyard.getDomino() );
+		}
+	}
+
+	checkForScore(){
+		var last_right = this.getLastRight();
+		var last_left = this.getLastLeft();
+
+		var sum = 0;
+
+		var left_sum = 0;
+		var right_sum = 0;
+
+		if(! last_left && this.board.pieces_right.length > 1){
+			last_left = this.board.pieces_right[0]; // get first left
+		}
+
+		if(last_left){
+			if(last_left.top_number == last_left.bottom_number){
+				// Double
+				left_sum = last_left.top_number * 2;
+			}
+			else{
+				left_sum = last_left.top_number;
+			}
+		}
+
+		if(last_right){
+			if(last_right.top_number == last_right.bottom_number){
+				// Double
+				right_sum = last_right.top_number * 2;
+			}
+			else{
+				right_sum = last_right.bottom_number;
+			}
+		}
+
+		if(! last_left){
+			sum = right_sum;
+		}
+		else if(! last_right){
+			sum = left_sum;
+		}
+		else{
+			sum = right_sum + left_sum;
+		}
+
+		console.log('score', left_sum, right_sum, last_right, last_left, sum);
+
+		if(sum % 5 == 0){
+			return sum;
+		}
+		else{
+			return false;
+		}
+	}
+
+	getLastLeft(){
+		if(this.board.pieces_left.length){
+			return this.board.pieces_left[this.board.pieces_left.length - 1];;
+		}
+		else{
+			return false;
+		}
+	}
+
+	getLastRight(){
+		if(this.board.pieces_right.length){
+			return this.board.pieces_right[this.board.pieces_right.length - 1];;
+		}
+		else{
+			return false;
 		}
 	}
 }

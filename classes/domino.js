@@ -5,6 +5,10 @@ class Domino {
 		this.bottom_number = bottom;
 	}
 
+	isDouble(){
+		return this.top_number == this.bottom_number;
+	}
+
 	fromJSON(obj){
 	    for (var prop in obj) this[prop] = obj[prop];
 	}

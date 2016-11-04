@@ -2,8 +2,11 @@
   "dependencies": {
     "main.js": {
       "files": [
-        "scripts/main.js"
+        "scripts/main.js",
+        "scripts/board.js",
+        "scripts/player-list.js"
       ],
+      "bower": ["jquery"],
       "main": true
     },
     "main.css": {
@@ -11,10 +14,6 @@
         "styles/main.scss"
       ],
       "main": true
-    },
-    "jquery.js": {
-      "main": true,
-      "bower": ["jquery"]
     } 
   },
   "config": {

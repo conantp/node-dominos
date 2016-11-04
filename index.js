@@ -12,10 +12,6 @@ var Player = require('./classes/player.js');
 
 app.use('/dist', express.static(__dirname + '/dist'));
 
-// app.get('/dist/styles/main.css', function(req, res){
-//   res.sendfile('dist/styles/main.css');
-// });
-
 app.get('/', function(req, res){
   res.sendfile('html/player.html');
 });
@@ -65,61 +61,103 @@ console.log(game);
 
 // console.log(game.getCurrentScore() );
 
-io.on('connection', function(socket){
-  console.log('a user connected');
-  	// socket.emit('player', p);
-		io.emit('board-refresh', game.board);
+var gameServer = {};
 
-	socket.emit('connect123', 'connect');
+gameServer.sendPlayerList = function(){
+	io.emit('player-list', game.players);
+};
+
+gameServer.sendGameList = function(){
+	io.emit('game-list', game);
+};
+
+gameServer.dominoPlay = function(playerJSON, dominoJSON){
+	// console.log('got domino play', player, domino);
+
+	var player = new Player();
+	player.fromJSON(playerJSON);
+
+	player = game.getPlayer(player.id); // get the actual game one
+
+	var domino = new Domino();
+	domino.fromJSON(dominoJSON);
+	
+	if(! game.makePlay(player, domino) ){
+		io.emit('domino-play-error', "Invalid Play");
+	}
+	else{
+		var score = game.checkForScore();
+		player.score += score;
+		if(score){
+			io.emit('player-score', player, score);
+			io.emit('player-list', game.players);
+		}
+
+		io.emit('player-refresh', player);
+		io.emit('board-refresh', game.board);
+	}
+
+
+	console.log(player);
+	console.log(game.board);
+
+	console.log(game.players);
+
+	// io.emit('domino-play-error', "Invalid Play");
+};
+
+gameServer.playerAdd = function(player){
+	console.log('got event', player);
+
+	var my_player = new Player(player.player_name);
+	game.addPlayer(my_player);
+
+	game.fillPlayerHand(my_player);
+
+	console.log(game);
+
+	io.emit('player-refresh', my_player);
+
+	io.emit('received', player);
+
+	gameServer.sendPlayerList();
+};
+
+gameServer.boardRefresh = function(){
+	io.emit('board-refresh', game.board);
+
+};
+
+gameServer.connectActions = function(){
+	gameServer.boardRefresh();
+	gameServer.sendPlayerList();
+};
+
+gameServer.resetGame = function(){
+	game = new DominosGame();
+
+	// io.emit('player-refresh', false);
+
+	gameServer.boardRefresh();
+	gameServer.sendPlayerList();
+};
+
+
+io.on('connection', function(socket){
+	console.log('a user connected');
+
+	gameServer.connectActions();
+
+	socket.on('player-list', gameServer.sendPlayerList); 
+	socket.on('game-list', gameServer.sendGameList);
+
+	socket.on('domino-play', gameServer.dominoPlay);
+	socket.on('player-add', gameServer.playerAdd);
+
+	socket.on('reset-game', gameServer.resetGame);
 
 	socket.on('disconnect', function(){
 		console.log('user disconnected');
-	});
-
-	socket.on('domino-play', function(playerJSON, dominoJSON){
-		// console.log('got domino play', player, domino);
-
-		var player = new Player();
-		player.fromJSON(playerJSON);
-
-		var domino = new Domino();
-		domino.fromJSON(dominoJSON);
-		
-		if(! game.makePlay(player, domino) ){
-			io.emit('domino-play-error', "Invalid Play");
-		}
-		else{
-			io.emit('player-refresh', player);
-			io.emit('board-refresh', game.board);
-
-		}
-
-		console.log(player);
-		console.log(game.board);
-
-
-		// io.emit('domino-play-error', "Invalid Play");
-
-	});
-
-	socket.on('player-add', function(player){
-		console.log('got event', player);
-
-		var my_player = new Player(player.player_name);
-		game.addPlayer(my_player);
-
-		game.fillPlayerHand(my_player);
-
-		console.log(game);
-
-		io.emit('player-refresh', my_player);
-
-		io.emit('received', player);
-	});
-
-	socket.on('event', function(data){
-		console.log('got event', data);
-		io.emit('received', data);
 	});
 });
 

@@ -11,8 +11,11 @@ body {
 
 .board{
 	margin: 10px;
+	padding: 20px;
   	border: 5px solid black;
-  	overflow: hidden;
+  	overflow-x: scroll;
+  	// width: 200%;
+  	// height: 50px;
 
   	.domino{
   		div{
@@ -21,14 +24,34 @@ body {
 	      	padding-bottom: 0;
 		}
 
+		&.double{
+		    transform: rotate(90deg);
+		    margin-left: -20px;
+		    margin-right: -20px;
+		    > div{
+			    transform: rotate(-90deg);
+
+			    &.top{
+			    	border-right: none;
+    		      	border-bottom: 3px solid black;
+
+			    }
+		    }
+		}
+
+		.top, .bottom{
+			padding: 10px;
+		}
+
 		.top{
 	      	border-bottom: none;
 	      	border-right: 3px solid black;
-	      	padding-right: 15px;
+	      	// padding-right: 15px;
+	      	text-align: center;
 	    }
 
 	    .bottom{
-	    	padding-left: 15px;
+	    	// padding-left: 15px;
 	    }
 	}
 }
@@ -37,7 +60,7 @@ body {
 .domino{
 	box-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 
-	padding: 20px;
+	padding: 10px 20px;
 	margin: 10px;
 	border: 1px solid black;
 	text-align: center;
