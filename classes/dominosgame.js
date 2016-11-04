@@ -32,9 +32,34 @@ class DominosGame{
 	}
 
 	advancePlayer(){
-		for(var player in this.players){
-			var active_player = this.active_player;
-			console.log('testing Jesse Advance Player' + this.players[player]);
+		var active_player_index = false;
+		for(var player_index in this.players){
+			console.log(player_index);
+			var this_player = this.players[player_index];
+
+			if(this_player.id == this.active_player.id){
+				console.log('found this player');
+				active_player_index = player_index;
+				break;
+			}
+		}
+
+		if(active_player_index){
+			active_player_index = parseInt( active_player_index);
+			var next_player_index = parseInt(active_player_index) + 1;
+
+			if(next_player_index >= this.players.length){
+				next_player_index = 0;
+			}
+
+			console.log('attempting to advance', active_player_index, typeof active_player_index, next_player_index, this.players[next_player_index]);
+			this.active_player = this.players[next_player_index];
+			console.log('advanced to next player', this.active_player.player_name);
+
+		}
+		else{
+			console.log("No player found to advance?");
+			return false;
 		}
 	}
 

@@ -21,6 +21,8 @@ class Player {
 	    	newDomino.fromJSON(dominoJSON);
 	    	this.hand[index] = newDomino;
 	    }
+
+	    this.id = parseInt(this.id);
 	}
 
 	addToHand(domino){

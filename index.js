@@ -97,6 +97,8 @@ gameServer.dominoPlay = function(playerJSON, dominoJSON){
 
 		io.emit('player-refresh', player);
 		io.emit('board-refresh', game.board);
+		gameServer.refreshActivePlayer();
+
 	}
 
 
@@ -127,6 +129,11 @@ gameServer.playerAdd = function(player){
 	io.emit('received', player);
 
 	gameServer.sendPlayerList();
+	gameServer.refreshActivePlayer();
+};
+
+gameServer.refreshActivePlayer = function(){
+	io.emit('active-player-refresh', game.active_player);
 };
 
 gameServer.boardRefresh = function(){
@@ -137,6 +144,7 @@ gameServer.boardRefresh = function(){
 gameServer.connectActions = function(){
 	gameServer.boardRefresh();
 	gameServer.sendPlayerList();
+	gameServer.refreshActivePlayer();
 };
 
 gameServer.resetGame = function(){
