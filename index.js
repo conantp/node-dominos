@@ -98,7 +98,6 @@ gameServer.dominoPlay = function(playerJSON, dominoJSON){
 		io.emit('player-refresh', player);
 		io.emit('board-refresh', game.board);
 		gameServer.refreshActivePlayer();
-
 	}
 
 

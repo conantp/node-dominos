@@ -2,6 +2,7 @@
 		dominos_board_client = {};
 		dominos_board_client.active_board = false;
 		dominos_board_client.error_message = false;
+		dominos_board_client.active_score_message = false;
 
 		dominos_board_client.updateUI = function(){
 			if(dominos_board_client.error_message){
@@ -50,6 +51,17 @@
 						$('.board').prepend(template);
 					}
 				}
+
+				if(dominos_board_client.active_score_message){
+					$('.score').html(dominos_board_client.active_score_message).fadeIn();
+					setTimeout(function(){
+						dominos_board_client.active_score_message = false;
+
+					}, 3000);
+				}
+				else{
+					$('.score').fadeOut(function(){ $(this).html("") });
+				}
 			}
 		};
 
@@ -74,7 +86,7 @@
 			var scorePlayer = new Player();
 			scorePlayer.fromJSON(playerJSON);
 
-			$(".score").html(scorePlayer.player_name  + " scored " + score + "!");
+			dominos_board_client.active_score_message = scorePlayer.player_name  + " scored " + score + "!";
 
 			dominos_board_client.updateUI();
 		};

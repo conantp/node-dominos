@@ -9,6 +9,8 @@
 
 		dominos_client.domino_template = $(".domino-template").remove();
 
+		dominos_client.uiState = {};
+
 		dominos_client.updateUI = function(){
 			if(dominos_client.error_message){
 				if($(".player-hand-container .error").length){
@@ -24,25 +26,45 @@
 			}
 
 			if(dominos_client.active_player){
-				$(".active-player-name").html(dominos_client.active_player.player_name);
+				if(	! dominos_client.uiState.player || 
+					dominos_client.uiState.player.id != dominos_client.active_player.id
+				){
+					// if($('.player-hand .domino').length){
 
-				$(".step1").fadeOut();
+					// }
+					// $('.player-hand').fadeOut(function(){
+						$(".active-player-name").html(dominos_client.active_player.player_name);
 
-				$('.player-hand').html("");
-				if(dominos_client.active_player.hand.length){
-					for(index in dominos_client.active_player.hand){
-						bone = dominos_client.active_player.hand[index];
-						console.log(bone);
+						// $(".step1").fadeOut();
 
-						var template = dominos_client.domino_template.clone();
 
-						template.find('.top').html(bone.top_number);
-						template.find('.bottom').html(bone.bottom_number);
-						template.attr('data-domino-index', index);
 
-						$('.player-hand').append(template);
-					}
+						$('.player-hand').html("");
+						if(dominos_client.active_player.hand.length){
+							for(index in dominos_client.active_player.hand){
+								bone = dominos_client.active_player.hand[index];
+								console.log(bone);
+
+								var template = dominos_client.domino_template.clone();
+
+								template.find('.top').html(bone.top_number);
+								template.find('.bottom').html(bone.bottom_number);
+								template.attr('data-domino-index', index);
+
+								$('.player-hand').append(template);
+							}
+						}
+
+						$('.player-hand').fadeIn();
+
+
+						dominos_client.uiState.player = dominos_client.active_player;
+					// });
+
+
 				}
+
+
 			}
 		};
 
@@ -57,9 +79,9 @@
 			console.log('refresh player', player);
 			dominos_client.error_message = false;
 
-			if(! dominos_client.active_player){
+			// if(! dominos_client.active_player){
 				dominos_client.active_player = new Player();
-			}
+			// }
 			dominos_client.active_player.fromJSON(player);
 			console.log('active player', dominos_client.active_player);
 
@@ -75,10 +97,12 @@
 			// delete dominos_client.active_player.hand[domino_index];
 
 			// dominos_client.updateUI();
-		};
+		};  
 
 		dominos_client.handlePlayerName = function(){
 			var player_name = $('.player-name').val();
+			$('.player-name').val("");
+
 			console.log('player_name', player_name);
 
 			var player = new Player(player_name);
@@ -89,6 +113,7 @@
 
 		socket.on('player-refresh', dominos_client.handlePlayerRefresh);
 		socket.on('domino-play-error', dominos_client.handlePlayError);
+		socket.on('active-player-refresh', dominos_client.handlePlayerRefresh);
 
 		$(document).on('submit', '.player-name-form', dominos_client.handlePlayerName);
 
